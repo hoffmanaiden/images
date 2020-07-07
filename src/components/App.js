@@ -2,16 +2,19 @@ import React, { Component } from 'react';
 import unsplash from "../api/unsplash";
 import SearchBar from './SearchBar';
 import ImageList from "./ImageList";
+import Pages from './Pages';
 
 
 class App extends Component {
-  state = { images: [] };
+  state = { images: [], pages: 0 };
 
   onSearchSubmit = async (term) => {
-    const response = await unsplash.get('/search/photos', {
-      params: { query: term }
+    const response = await unsplash.get('/search/photos?page=3', {
+      params: { query: term, per_page: 30 },
     });
     this.setState({ images: response.data.results });
+    this.setState({ pages: response.data.total_pages });
+    console.log(response);
   }
 
   render() {
@@ -19,6 +22,7 @@ class App extends Component {
       <div className="ui container" style={{ marginTop: '10px' }}>
         <SearchBar onSearchSubmit={this.onSearchSubmit} />
         Found: {this.state.images.length} images
+        <Pages pages={this.state.pages} />
         <ImageList images={this.state.images} />
       </div>
     )
